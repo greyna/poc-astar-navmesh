@@ -68,6 +68,7 @@
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="GraphEdge.cpp" />
     <ClCompile Include="GraphNode.cpp" />
+    <ClCompile Include="GraphSearch.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +76,7 @@
     <ClInclude Include="Graph.h" />
     <ClInclude Include="GraphEdge.h" />
     <ClInclude Include="GraphNode.h" />
+    <ClInclude Include="GraphSearch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

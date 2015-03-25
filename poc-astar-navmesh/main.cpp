@@ -4,6 +4,7 @@
 #include "GraphNode.h"
 #include "GraphEdge.h"
 #include "Graph.h"
+#include "GraphSearch.h"
 
 
 void testGraph();
@@ -69,9 +70,8 @@ void testComplexGraph()
 	g.setInfo(new Vec2f(2.0f, 0.0f));
 	GraphNode<Vec2f> d1;
 	d1.setInfo(new Vec2f(0.2f, 0.4f));
-	GraphNode<Vec2f> d2;
-	d2.setInfo(new Vec2f(1.8f, 0.4f));
-
+	GraphNode<Vec2f> a1;
+	a1.setInfo(new Vec2f(1.8f, 0.4f));
 
 	GraphEdge ab(0, 1);
 	GraphEdge ax(0, 2);
@@ -86,4 +86,31 @@ void testComplexGraph()
 	GraphEdge a1x(3, 4);
 	GraphEdge a1f(3, 4);
 	GraphEdge a1g(3, 4);
+
+	graph.addNode(a);
+	graph.addNode(b);
+	graph.addNode(x);
+	graph.addNode(f);
+	graph.addNode(g);
+	graph.addNode(d1);
+	graph.addNode(a1);
+
+	graph.addEdge(ab);
+	graph.addEdge(ax);
+	graph.addEdge(bx);
+	graph.addEdge(xf);
+	graph.addEdge(xg);
+	graph.addEdge(fg);
+
+	graph.addEdge(d1x);
+	graph.addEdge(d1b);
+	graph.addEdge(d1a);
+	graph.addEdge(a1x);
+	graph.addEdge(a1f);
+	graph.addEdge(a1g);
+
+	GraphSearch<Vec2f> astar(graph, d1.getIndex(), a1.getIndex());
+	astar.getCostToTarget();
+	astar.getPathToTarget();
+	astar.getSPT();
 }

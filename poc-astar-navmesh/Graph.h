@@ -41,6 +41,11 @@ public:
 		return m_iNextNodeIndex;
 	};
 
+	int numNodes() const
+	{
+		return nodes.size();
+	};
+
 	// Adds a node to the graph and returns its index
 	int addNode(GraphNode<extra> & node)
 	{
