@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <queue>
+#include <iostream>
 
 #include "common.h"
 #include "Graph.h"
@@ -18,6 +19,7 @@ protected:
 	std::vector<double> m_GCosts;
 	std::vector<double> m_FCosts;
 	std::vector<GraphEdge> m_ShortestPathTree;
+	// Contains the edge on the search frontier that have the least cost leading to their destination yet
 	std::vector<GraphEdge> m_SearchFrontier;
 
 	struct nodeAndCost
@@ -34,6 +36,11 @@ protected:
 			return (cost > other.cost);
 		};
 	};
+
+	static double euclidianHeuristic(extra pos1, extra pos2)
+	{
+		return dist(pos1, pos2);
+	};
 public:
 	GraphSearch(Graph<extra> &graph, int root, int target):
 		m_graph(graph), m_iRoot(root), m_iTarget(target),
@@ -43,6 +50,7 @@ public:
 			search();
 		};
 	~GraphSearch() {};
+
 	void search()
 	{
 		// Priority queue of nodes and cost, lowest cost node is at the top
@@ -54,6 +62,43 @@ public:
 		{
 			int nextClosestNode = pq.top().node;
 			pq.pop();
+
+			// Move the edge leading to it from the frontier to the SPT
+			m_ShortestPathTree[nextClosestNode] = m_SearchFrontier[nextClosestNode];
+
+			// If the target has been found exit
+			if (nextClosestNode == m_iTarget) return;
+
+			for (auto edge : m_graph.getEdges(nextClosestNode)) // For all edges from this node
+			{
+				// Heuristic cost
+				double HCost = euclidianHeuristic(m_graph.getNode(edge.getDest()).getInfo(), m_graph.getNode(m_iTarget).getInfo());
+
+				// Real cost
+				double GCost = m_GCosts[nextClosestNode] + edge.getCost();
+
+				// If the node has not been added to the frontier, add it and update the G and F costs
+				if (!m_SearchFrontier[edge.getDest()].isValid())
+				{
+					m_FCosts[edge.getDest()] = GCost + HCost;
+					m_GCosts[edge.getDest()] = GCost;
+
+					pq.push(nodeAndCost(edge.getDest(), GCost + HCost));
+
+					m_SearchFrontier[edge.getDest()] = edge;
+				}
+				// Edge relaxation: If this node is already on the frontier but the cost to get here
+				// is cheaper than has been found previously, update the node cost and frontier.
+				else if ((GCost < m_GCosts[edge.getDest()]) && (!m_ShortestPathTree[edge.getDest()].isValid()))
+				{
+					m_FCosts[edge.getDest()] = GCost + HCost;
+					m_GCosts[edge.getDest()] = GCost;
+
+					pq.push(nodeAndCost(edge.getDest(), GCost + HCost));
+
+					m_SearchFrontier[edge.getDest()] = edge;
+				}
+			}
 		}
 	};
 
@@ -66,7 +111,18 @@ public:
 	// Returns a vector of node indexes that comprise the shortest path from the root to the target node
 	std::list<int> getPathToTarget() const
 	{
-		return std::list<int>();
+		std::list<int> path;
+
+		int nextNode = m_iTarget;
+		path.push_front(nextNode);
+
+		while ((nextNode != m_iRoot) && (m_ShortestPathTree[nextNode].isValid()))
+		{
+			nextNode = m_ShortestPathTree[nextNode].getSrc();
+			path.push_front(nextNode);
+		}
+
+		return path;
 	};
 
 	// Returns the total cost to the target

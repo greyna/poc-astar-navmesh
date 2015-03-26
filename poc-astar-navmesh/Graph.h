@@ -64,7 +64,7 @@ public:
 		return index;
 	};
 
-	GraphNode<extra>& getNode(int index)
+	const GraphNode<extra>& getNode(int index) const
 	{
 		return nodes.at(index);
 	};
@@ -112,6 +112,11 @@ public:
 				break; // break is mandatory here because we modify the list inside a loop through it
 			}
 		}
+	};
+
+	const std::list<GraphEdge>& getEdges(const int nodeIndex) const
+	{
+		return edges[nodeIndex];
 	};
 };
 

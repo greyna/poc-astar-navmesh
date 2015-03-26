@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "common.h"
 
 class GraphEdge
@@ -47,6 +49,11 @@ public:
 		m_dCost = cost;
 	};
 
+	bool isValid() const
+	{
+		return ((m_iSrc != g_INVALID_NODE_INDEX) || (m_iDest != g_INVALID_NODE_INDEX));
+	};
+
 	// For use in list
 	bool operator==(const GraphEdge& rhs)
 	{
@@ -59,5 +66,13 @@ public:
 	{
 		return !(*this == rhs);
 	};
+
+	friend std::ostream& operator<<(std::ostream& os, const GraphEdge& e)
+	{
+		os << "source: " << e.m_iSrc << " destination: " << e.m_iDest
+			<< " cost: " << e.m_dCost << std::endl;
+
+		return os;
+	}
 };
 

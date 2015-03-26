@@ -12,12 +12,12 @@ void testComplexGraph();
 
 int main()
 {
-	std::cout << "\n================\nWelcome to the A* and NavMesh POC for the Ubisoft Graduate Program 2015 at Annecy.\n================\n" << std::endl;
+	std::cout << "\n=== A* and NavMesh POC for the Ubisoft Graduate Program 2015 at Annecy ===\n" << std::endl;
 
 	testGraph();
 	testComplexGraph();
 
-	std::cout << "OK !" << std::endl;
+	std::cout << "\n\n=== Correctly finished ===\n" << std::endl;
 
 	char stop;
 	std::cin >> stop;
@@ -40,8 +40,6 @@ void testGraph()
 	g.addNode(n2);
 	g.addEdge(e);
 
-	std::cout << n.getIndex() << " - " << n2.getIndex() << std::endl;
-
 	g.getNode(0);
 	g.getNode(1);
 	g.getEdge(0, 1);
@@ -58,19 +56,19 @@ void testComplexGraph()
 {
 	Graph<Vec2f> graph;
 
-	GraphNode<Vec2f> a;
+	GraphNode<Vec2f> a; // index 0
 	a.setInfo(new Vec2f(0.0f, 0.0f));
-	GraphNode<Vec2f> b;
+	GraphNode<Vec2f> b; // index 1
 	b.setInfo(new Vec2f(0.0f, 1.0f));
-	GraphNode<Vec2f> x;
+	GraphNode<Vec2f> x; // index 2
 	x.setInfo(new Vec2f(1.0f, 1.0f));
-	GraphNode<Vec2f> f;
+	GraphNode<Vec2f> f; // index 3
 	f.setInfo(new Vec2f(2.0f, 1.0f));
-	GraphNode<Vec2f> g;
+	GraphNode<Vec2f> g; // index 4
 	g.setInfo(new Vec2f(2.0f, 0.0f));
-	GraphNode<Vec2f> d1;
+	GraphNode<Vec2f> d1; // Root node index 5
 	d1.setInfo(new Vec2f(0.2f, 0.4f));
-	GraphNode<Vec2f> a1;
+	GraphNode<Vec2f> a1; // Target node index 6
 	a1.setInfo(new Vec2f(1.8f, 0.4f));
 
 	GraphEdge ab(0, 1);
@@ -80,12 +78,12 @@ void testComplexGraph()
 	GraphEdge xg(2, 4);
 	GraphEdge fg(3, 4);
 
-	GraphEdge d1x(3, 4);
-	GraphEdge d1b(3, 4);
-	GraphEdge d1a(3, 4);
-	GraphEdge a1x(3, 4);
-	GraphEdge a1f(3, 4);
-	GraphEdge a1g(3, 4);
+	GraphEdge d1x(5, 2, 0.8);
+	GraphEdge d1b(5, 1, 0.2);
+	GraphEdge d1a(5, 0, 0.1);
+	GraphEdge a1x(6, 2, 0.8);
+	GraphEdge a1f(6, 3, 0.5);
+	GraphEdge a1g(6, 4, 0.1);
 
 	graph.addNode(a);
 	graph.addNode(b);
@@ -111,6 +109,12 @@ void testComplexGraph()
 
 	GraphSearch<Vec2f> astar(graph, d1.getIndex(), a1.getIndex());
 	astar.getCostToTarget();
-	astar.getPathToTarget();
 	astar.getSPT();
+
+	std::cout << "Path to target: ";
+	for (auto node : astar.getPathToTarget())
+	{
+		if (node!=6) std::cout << node << " -> ";
+		else std::cout << node << std::endl; // target
+	}
 }
