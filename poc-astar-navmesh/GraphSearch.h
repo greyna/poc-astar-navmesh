@@ -8,7 +8,6 @@
 #include "Graph.h"
 
 
-// TODO take heuristic as a function pointer
 template<class extra>
 class GraphSearch
 {

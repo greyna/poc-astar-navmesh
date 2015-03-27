@@ -49,6 +49,15 @@ public:
 	// Adds a node to the graph and returns its index
 	int addNode(GraphNode<extra> & node)
 	{
+		for (auto n : nodes)
+		{
+			if (n.getInfo() == node.getInfo())
+			{
+				node.setIndex(n.getIndex());
+				return n.getIndex();
+			}
+		}
+
 		int index = m_iNextNodeIndex;
 		node.setIndex(index);
 		try
@@ -77,6 +86,11 @@ public:
 
 	void addEdge(GraphEdge edge)
 	{
+		for (auto e : edges[edge.getSrc()])
+		{
+			if (e.getDest() == edge.getDest()) return;
+		}
+
 		edges[edge.getSrc()].push_back(edge);
 		GraphEdge bidirectionalEdge(edge.getDest(), edge.getSrc(), edge.getCost());
 		edges[edge.getDest()].push_back(bidirectionalEdge);
@@ -90,6 +104,11 @@ public:
 		}
 
 		throw;
+	};
+
+	const std::list<GraphEdge>& getEdges(const int nodeIndex) const
+	{
+		return edges[nodeIndex];
 	};
 
 	void removeEdge(int src, int dest)
@@ -114,9 +133,11 @@ public:
 		}
 	};
 
-	const std::list<GraphEdge>& getEdges(const int nodeIndex) const
+	void clear()
 	{
-		return edges[nodeIndex];
+		nodes.clear();
+		edges.clear();
+		m_iNextNodeIndex = 0;
 	};
 };
 

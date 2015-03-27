@@ -5,19 +5,25 @@
 #include "GraphEdge.h"
 #include "Graph.h"
 #include "GraphSearch.h"
+#include "navMesh.h"
 
 
 void testGraph();
 void testComplexGraph();
+void testNavMesh1(Vec2f root, Vec2f target);
+void testNavMesh2(Vec2f root, Vec2f target);
 
 int main()
 {
 	std::cout << "\n=== A* and NavMesh POC for the Ubisoft Graduate Program 2015 at Annecy ===\n" << std::endl;
 
-	testGraph();
-	testComplexGraph();
+	//testGraph();
+	//testComplexGraph();
+	//testNavMesh1(Vec2f(0.2f, 0.8f), Vec2f(1.8f, 0.8f));
+	//testNavMesh2(Vec2f(0.2f, 0.8f), Vec2f(2.8f, 0.8f));
+	testNavMesh2(Vec2f(0.2f, 0.8f), Vec2f(1.2f, 2.8f));
 
-	std::cout << "\n\n=== Correctly finished ===\n" << std::endl;
+	std::cout << "\n=== Correctly finished ===\n" << std::endl;
 
 	char stop;
 	std::cin >> stop;
@@ -50,7 +56,6 @@ void testGraph()
 	g.addNode(n);
 	g.addEdge(e);
 }
-
 
 void testComplexGraph()
 {
@@ -108,13 +113,71 @@ void testComplexGraph()
 	graph.addEdge(a1g);
 
 	GraphSearch<Vec2f> astar(graph, d1.getIndex(), a1.getIndex());
-	astar.getCostToTarget();
-	astar.getSPT();
 
-	std::cout << "Path to target: ";
+	std::cout << "Path to target (cost=" << astar.getCostToTarget() << "): ";
 	for (auto node : astar.getPathToTarget())
 	{
 		if (node!=6) std::cout << node << " -> ";
 		else std::cout << node << std::endl; // target
 	}
+}
+
+void testNavMesh1(Vec2f root, Vec2f target)
+{
+	std::vector<Triangle> navMesh;
+	Graph<Vec2f> graph;
+
+	navMesh.push_back(Triangle(Vec2f(0.0f, 1.0f), Vec2f(0.0f, 0.0f), Vec2f(1.0f, 1.0f)));
+	navMesh.push_back(Triangle(Vec2f(0.0f, 2.0f), Vec2f(0.0f, 1.0f), Vec2f(1.0f, 1.0f)));
+	navMesh.push_back(Triangle(Vec2f(0.0f, 2.0f), Vec2f(1.0f, 2.0f), Vec2f(1.0f, 1.0f)));
+	navMesh.push_back(Triangle(Vec2f(1.0f, 2.0f), Vec2f(2.0f, 2.0f), Vec2f(1.0f, 1.0f)));
+	navMesh.push_back(Triangle(Vec2f(2.0f, 2.0f), Vec2f(2.0f, 1.0f), Vec2f(1.0f, 1.0f)));
+	navMesh.push_back(Triangle(Vec2f(2.0f, 1.0f), Vec2f(2.0f, 0.0f), Vec2f(1.0f, 1.0f)));
+
+	int rootNodeIndex, targetNodeIndex;
+	navMeshToGraph(navMesh, graph, root, target, rootNodeIndex, targetNodeIndex);
+	std::cout << "rootNodeIndex=" << rootNodeIndex << " and targetNodeIndex=" << targetNodeIndex << std::endl;
+
+	GraphSearch<Vec2f> astar(graph, rootNodeIndex, targetNodeIndex);
+
+	std::cout << "Path to target (cost=" << astar.getCostToTarget() << "): ";
+	for (auto node : astar.getPathToTarget())
+	{
+		if (node != targetNodeIndex) std::cout << node << " -> ";
+		else std::cout << node << std::endl; // target
+	}
+}
+
+void testNavMesh2(Vec2f root, Vec2f target)
+{
+	std::vector<Triangle> navMesh;
+	Graph<Vec2f> graph;
+
+	navMesh.push_back(Triangle(Vec2f(0.0f, 1.0f), Vec2f(0.0f, 0.0f), Vec2f(1.0f, 1.0f)));
+	navMesh.push_back(Triangle(Vec2f(0.0f, 2.0f), Vec2f(0.0f, 1.0f), Vec2f(1.0f, 1.0f)));
+	navMesh.push_back(Triangle(Vec2f(0.0f, 2.0f), Vec2f(1.0f, 2.0f), Vec2f(1.0f, 1.0f)));
+
+	navMesh.push_back(Triangle(Vec2f(0.0f, 2.0f), Vec2f(1.0f, 2.0f), Vec2f(1.0f, 3.0f)));
+	navMesh.push_back(Triangle(Vec2f(1.0f, 2.0f), Vec2f(1.0f, 3.0f), Vec2f(2.0f, 3.0f)));
+	navMesh.push_back(Triangle(Vec2f(1.0f, 2.0f), Vec2f(2.0f, 2.0f), Vec2f(2.0f, 3.0f)));
+	navMesh.push_back(Triangle(Vec2f(2.0f, 2.0f), Vec2f(2.0f, 3.0f), Vec2f(3.0f, 3.0f)));
+	navMesh.push_back(Triangle(Vec2f(2.0f, 2.0f), Vec2f(3.0f, 2.0f), Vec2f(3.0f, 3.0f)));
+
+	navMesh.push_back(Triangle(Vec2f(2.0f, 2.0f), Vec2f(3.0f, 2.0f), Vec2f(2.0f, 1.0f)));
+	navMesh.push_back(Triangle(Vec2f(3.0f, 2.0f), Vec2f(3.0f, 1.0f), Vec2f(2.0f, 1.0f)));
+	navMesh.push_back(Triangle(Vec2f(3.0f, 1.0f), Vec2f(3.0f, 0.0f), Vec2f(2.0f, 1.0f)));
+
+	int rootNodeIndex, targetNodeIndex;
+	navMeshToGraph(navMesh, graph, root, target, rootNodeIndex, targetNodeIndex);
+	std::cout << "rootNodeIndex=" << rootNodeIndex << " and targetNodeIndex=" << targetNodeIndex << std::endl;
+
+	GraphSearch<Vec2f> astar(graph, rootNodeIndex, targetNodeIndex);
+
+	std::cout << "Path to target (cost=" << astar.getCostToTarget() << "): ";
+	for (auto node : astar.getPathToTarget())
+	{
+		if (node != targetNodeIndex) std::cout << node << " -> ";
+		else std::cout << node << std::endl; // target
+	}
+	std::cout << std::endl;
 }
